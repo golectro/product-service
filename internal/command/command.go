@@ -96,8 +96,8 @@ func (ce *CommandExecutor) handleDropTable(logger *logrus.Logger) {
 		logger.Fatal("❌ DROP_TABLE_NAMES is not set in env")
 	}
 
-	tableList := strings.Split(tables, ",")
-	for _, table := range tableList {
+	tableList := strings.SplitSeq(tables, ",")
+	for table := range tableList {
 		table = strings.TrimSpace(table)
 		if table == "" {
 			continue
