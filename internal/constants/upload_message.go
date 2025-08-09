@@ -3,7 +3,7 @@ package constants
 import "golectro-product/internal/model"
 
 var (
-InvalidFileType = model.Message{
+	InvalidFileType = model.Message{
 		"en": "Invalid file type",
 		"id": "Tipe file tidak valid",
 	}

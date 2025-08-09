@@ -35,10 +35,10 @@ func Bootstrap(config *BootstrapConfig) {
 	authMiddleware := middleware.NewAuth(config.Viper)
 
 	routeConfig := route.RouteConfig{
-		App:               config.App,
-		AuthMiddleware:    authMiddleware,
-		Minio:             config.Minio,
-		Viper:             config.Viper,
+		App:            config.App,
+		AuthMiddleware: authMiddleware,
+		Minio:          config.Minio,
+		Viper:          config.Viper,
 	}
 	routeConfig.Setup()
 }
