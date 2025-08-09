@@ -10,7 +10,7 @@ import (
 
 func (c *RouteConfig) RegisterCommonRoutes(app *gin.Engine) {
 	welcomeHandler := func(ctx *gin.Context) {
-		res := utils.SuccessResponse(ctx, http.StatusOK, constants.WelcomeMessage, "Welcome to Golectro User API")
+		res := utils.SuccessResponse(ctx, http.StatusOK, constants.WelcomeMessage, "Welcome to Golectro Product API")
 		ctx.JSON(res.StatusCode, res)
 	}
 

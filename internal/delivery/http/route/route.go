@@ -13,6 +13,7 @@ type RouteConfig struct {
 	Minio             *minio.Client
 	AuthMiddleware    gin.HandlerFunc
 	Viper             *viper.Viper
+	ProductController *http.ProductController
 	SwaggerController *http.SwaggerController
 }
 
@@ -21,4 +22,5 @@ func (c *RouteConfig) Setup() {
 
 	c.RegisterCommonRoutes(c.App)
 	c.RegisterSwaggerRoutes(api)
+	c.RegisterProductRoutes(api, c.Minio)
 }

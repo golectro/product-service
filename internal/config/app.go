@@ -1,8 +1,11 @@
 package config
 
 import (
+	"golectro-product/internal/delivery/http"
 	"golectro-product/internal/delivery/http/middleware"
 	"golectro-product/internal/delivery/http/route"
+	"golectro-product/internal/repository"
+	"golectro-product/internal/usecase"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/gin-gonic/gin"
@@ -32,13 +35,22 @@ type BootstrapConfig struct {
 }
 
 func Bootstrap(config *BootstrapConfig) {
+	productRepository := repository.NewProductRepository(config.Log)
+	minioRepository := repository.NewMinioRepository(config.Minio)
+
+	productUseCase := usecase.NewProductUsecase(config.DB, config.Log, config.Validate, productRepository)
+	minioUseCase := usecase.NewMinioUsecase(minioRepository, config.Validate, config.Log)
+
+	productController := http.NewProductController(productUseCase, minioUseCase, config.Log, config.Viper)
+
 	authMiddleware := middleware.NewAuth(config.Viper)
 
 	routeConfig := route.RouteConfig{
-		App:            config.App,
-		AuthMiddleware: authMiddleware,
-		Minio:          config.Minio,
-		Viper:          config.Viper,
+		App:               config.App,
+		AuthMiddleware:    authMiddleware,
+		Minio:             config.Minio,
+		Viper:             config.Viper,
+		ProductController: productController,
 	}
 	routeConfig.Setup()
 }
