@@ -16,6 +16,7 @@ func main() {
 	vault := config.NewVaultClient(viper, log)
 	app := config.NewGin(viper, log, mongo, redis)
 	minio := config.NewMinioClient(viper, log)
+	elasticsearch := config.NewElasticSearch(viper, log)
 	executor := command.NewCommandExecutor(db)
 
 	config.Bootstrap(&config.BootstrapConfig{
@@ -28,6 +29,7 @@ func main() {
 		Redis:    redis,
 		Minio:    minio,
 		Vault:    vault,
+		Elastic:  elasticsearch,
 	})
 
 	if !executor.Execute(log) {
