@@ -1,8 +1,8 @@
 [
-  { "id": "aaaaaaa1-1111-1111-1111-111111111111", "product_id": "11111111-1111-1111-1111-111111111111", "image_object": "s24-ultra-front.jpg", "position": 1, "created_at": "2025-08-09T10:00:00Z" },
-  { "id": "aaaaaaa2-2222-2222-2222-222222222222", "product_id": "11111111-1111-1111-1111-111111111111", "image_object": "s24-ultra-back.jpg", "position": 2, "created_at": "2025-08-09T10:00:00Z" },
-  { "id": "bbbbbbb1-3333-3333-3333-333333333333", "product_id": "22222222-2222-2222-2222-222222222222", "image_object": "macbook-pro-front.jpg", "position": 1, "created_at": "2025-08-09T10:05:00Z" },
-  { "id": "bbbbbbb2-4444-4444-4444-444444444444", "product_id": "22222222-2222-2222-2222-222222222222", "image_object": "macbook-pro-side.jpg", "position": 2, "created_at": "2025-08-09T10:05:00Z" },
-  { "id": "ccccccc1-5555-5555-5555-555555555555", "product_id": "33333333-3333-3333-3333-333333333333", "image_object": "rog-strix-front.jpg", "position": 1, "created_at": "2025-08-09T10:10:00Z" },
-  { "id": "ccccccc2-6666-6666-6666-666666666666", "product_id": "33333333-3333-3333-3333-333333333333", "image_object": "rog-strix-back.jpg", "position": 2, "created_at": "2025-08-09T10:10:00Z" }
+  { "id": "aaaaaaa1-1111-1111-1111-111111111111", "product_id": "11111111-1111-1111-1111-111111111111", "image_object": "s24-ultra-front.jpg", "created_at": "2025-08-09T10:00:00Z" },
+  { "id": "aaaaaaa2-2222-2222-2222-222222222222", "product_id": "11111111-1111-1111-1111-111111111111", "image_object": "s24-ultra-back.jpg", "created_at": "2025-08-09T10:00:00Z" },
+  { "id": "bbbbbbb1-3333-3333-3333-333333333333", "product_id": "22222222-2222-2222-2222-222222222222", "image_object": "macbook-pro-front.jpg", "created_at": "2025-08-09T10:05:00Z" },
+  { "id": "bbbbbbb2-4444-4444-4444-444444444444", "product_id": "22222222-2222-2222-2222-222222222222", "image_object": "macbook-pro-side.jpg", "created_at": "2025-08-09T10:05:00Z" },
+  { "id": "ccccccc1-5555-5555-5555-555555555555", "product_id": "33333333-3333-3333-3333-333333333333", "image_object": "rog-strix-front.jpg", "created_at": "2025-08-09T10:10:00Z" },
+  { "id": "ccccccc2-6666-6666-6666-666666666666", "product_id": "33333333-3333-3333-3333-333333333333", "image_object": "rog-strix-back.jpg", "created_at": "2025-08-09T10:10:00Z" }
 ]

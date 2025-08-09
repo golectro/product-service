@@ -1,6 +1,8 @@
 package route
 
 import (
+	"golectro-product/internal/delivery/http/middleware"
+
 	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
 )
@@ -9,5 +11,13 @@ func (c *RouteConfig) RegisterProductRoutes(rg *gin.RouterGroup, minioClient *mi
 	product := rg.Group("/products")
 
 	product.GET("/", c.AuthMiddleware, c.ProductController.GetAllProducts)
+	product.GET("/:productID", c.AuthMiddleware, c.ProductController.GetProductByID)
 	product.POST("/", c.AuthMiddleware, c.ProductController.CreateProduct)
+	product.POST("/:productID/images", c.AuthMiddleware, middleware.MultipleFileUpload(minioClient, middleware.UploadOptions{
+		FieldName:     "images",
+		MaxFileSizeMB: 5,
+		MaxFiles:      5,
+		BucketName:    c.Viper.GetString("MINIO_BUCKET_PRODUCT"),
+		AllowedTypes:  []string{"image/jpeg", "image/png", "image/gif"},
+	}), c.ProductController.UploadProductImages)
 }

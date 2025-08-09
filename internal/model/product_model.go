@@ -8,7 +8,7 @@ import (
 type (
 	CreateProductRequest struct {
 		Name        string         `json:"name" validate:"required,max=255"`
-		Description string         `json:"description" validate:"max=65535"`
+		Description string         `json:"description" validate:"max=2000"`
 		Category    datatypes.JSON `json:"category"`
 		Brand       string         `json:"brand" validate:"required,max=100"`
 		Color       datatypes.JSON `json:"color"`
@@ -26,5 +26,10 @@ type (
 		Specs       datatypes.JSON `json:"specs"`
 		Price       float64        `json:"price"`
 		CreatedBy   uuid.UUID      `json:"created_by"`
+	}
+
+	UploadFilesResponse struct {
+		ProductID uuid.UUID `json:"product_id"`
+		Images    []string  `json:"images"`
 	}
 )

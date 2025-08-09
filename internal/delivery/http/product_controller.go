@@ -14,6 +14,7 @@ import (
 	"slices"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -72,6 +73,34 @@ func (c *ProductController) GetAllProducts(ctx *gin.Context) {
 	ctx.JSON(res.StatusCode, res)
 }
 
+func (c *ProductController) GetProductByID(ctx *gin.Context) {
+	productID := ctx.Param("productID")
+	if productID == "" {
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidProductID, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	productUUID, err := uuid.Parse(productID)
+	if err != nil {
+		c.Log.WithError(err).Error("Invalid product ID format")
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidProductIDFormat, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	product, err := c.ProductUseCase.GetProductByID(ctx, productUUID)
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to get product by ID")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.FailedGetProductByID, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	res := utils.SuccessResponse(ctx, http.StatusOK, constants.SuccessGetProductByID, product)
+	ctx.JSON(res.StatusCode, res)
+}
+
 func (c *ProductController) CreateProduct(ctx *gin.Context) {
 	auth := middleware.GetUser(ctx)
 
@@ -102,6 +131,60 @@ func (c *ProductController) CreateProduct(ctx *gin.Context) {
 	if err != nil {
 		c.Log.WithError(err).Error("Failed to create product")
 		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.FailedCreateProduct, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	res := utils.SuccessResponse(ctx, http.StatusCreated, constants.SuccessCreateProduct, result)
+	ctx.JSON(res.StatusCode, res)
+}
+
+func (c *ProductController) UploadProductImages(ctx *gin.Context) {
+	auth := middleware.GetUser(ctx)
+
+	productID := ctx.Param("productID")
+	if productID == "" {
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidProductID, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	productUUID, err := uuid.Parse(productID)
+	if err != nil {
+		c.Log.WithError(err).Error("Invalid product ID format")
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidProductIDFormat, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	var roles []string
+	if err := json.Unmarshal(auth.Roles, &roles); err != nil {
+		c.Log.WithError(err).Error("Failed to decode roles")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.InternalServerError, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	isAdmin := slices.Contains(roles, "admin")
+	if !isAdmin {
+		res := utils.FailedResponse(ctx, http.StatusForbidden, constants.AccessDenied, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	uploadedFilesAny, exists := ctx.Get("uploadedFiles")
+	if !exists {
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.NoFilesUploaded, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	uploadedFiles := uploadedFilesAny.([]map[string]any)
+
+	result, err := c.ProductUseCase.UploadProductImages(ctx, productUUID, uploadedFiles)
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to upload product images")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.InternalServerError, err)
 		ctx.AbortWithStatusJSON(res.StatusCode, res)
 		return
 	}

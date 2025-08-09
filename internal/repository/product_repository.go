@@ -3,6 +3,7 @@ package repository
 import (
 	"golectro-product/internal/entity"
 
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -35,4 +36,19 @@ func (r *ProductRepository) GetAll(db *gorm.DB, limit, offset int) ([]entity.Pro
 	}
 
 	return products, total, nil
+}
+
+func (r *ProductRepository) FindProductById(db *gorm.DB, productID uuid.UUID) (*entity.Product, error) {
+	var product entity.Product
+
+	if err := db.Preload("Images").First(&product, "id = ?", productID).Error; err != nil {
+		r.Log.WithError(err).Error("Failed to find product by ID")
+		return nil, err
+	}
+
+	return &product, nil
+}
+
+func (r *ProductRepository) CreateImage(db *gorm.DB, productImage *entity.ProductImage) error {
+	return db.Create(productImage).Error
 }
