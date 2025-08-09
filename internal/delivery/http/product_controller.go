@@ -26,7 +26,7 @@ import (
 type ProductController struct {
 	Log            *logrus.Logger
 	ProductUseCase *usecase.ProductUseCase
-	ImageUseCase *usecase.ImageUseCase
+	ImageUseCase   *usecase.ImageUseCase
 	MinioUseCase   *usecase.MinioUseCase
 	Viper          *viper.Viper
 }
@@ -35,7 +35,7 @@ func NewProductController(userUseCase *usecase.ProductUseCase, minioUseCase *use
 	return &ProductController{
 		Log:            log,
 		ProductUseCase: userUseCase,
-		ImageUseCase: imageUseCase,
+		ImageUseCase:   imageUseCase,
 		MinioUseCase:   minioUseCase,
 		Viper:          viper,
 	}
@@ -241,10 +241,10 @@ func (c *ProductController) GetProductImageURL(ctx *gin.Context) {
 	}
 
 	res := utils.SuccessResponse(ctx, http.StatusOK, constants.SuccessGetProductByID, model.ProductImageURLResponse{
-		ID: result.ID,
-		ProductID: result.ProductID,
+		ID:          result.ID,
+		ProductID:   result.ProductID,
 		ImageObject: result.ImageObject,
-		URL:     imageURL,
+		URL:         imageURL,
 	})
 	ctx.JSON(res.StatusCode, res)
 }

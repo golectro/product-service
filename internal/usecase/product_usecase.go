@@ -18,19 +18,19 @@ import (
 )
 
 type ProductUseCase struct {
-	DB                *gorm.DB
-	Log               *logrus.Logger
-	Validate          *validator.Validate
-	ProductRepository *repository.ProductRepository
+	DB                     *gorm.DB
+	Log                    *logrus.Logger
+	Validate               *validator.Validate
+	ProductRepository      *repository.ProductRepository
 	ProductImageRepository *repository.ImageRepository
 }
 
 func NewProductUsecase(db *gorm.DB, log *logrus.Logger, validate *validator.Validate, productRepository *repository.ProductRepository, productImageRepository *repository.ImageRepository) *ProductUseCase {
 	return &ProductUseCase{
-		DB:                db,
-		Log:               log,
-		Validate:          validate,
-		ProductRepository: productRepository,
+		DB:                     db,
+		Log:                    log,
+		Validate:               validate,
+		ProductRepository:      productRepository,
 		ProductImageRepository: productImageRepository,
 	}
 }
