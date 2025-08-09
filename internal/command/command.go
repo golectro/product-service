@@ -1,6 +1,7 @@
 package command
 
 import (
+	"golectro-product/internal/migrations"
 	"os"
 	"strings"
 
@@ -27,10 +28,10 @@ func (ce *CommandExecutor) Execute(logger *logrus.Logger) bool {
 		if strings.HasPrefix(arg, "--") {
 			hasFlag = true
 			switch arg {
-			// case "--migrate":
-			// 	ce.handleMigrate(logger)
-			// case "--seed":
-			// 	ce.handleSeed(logger)
+			case "--migrate":
+				ce.handleMigrate(logger)
+			case "--seed":
+				ce.handleSeed(logger)
 			case "--run":
 				run = true
 			}
@@ -48,16 +49,16 @@ func contains(slice []string, target string) bool {
 	return slices.Contains(slice, target)
 }
 
-// func (ce *CommandExecutor) handleMigrate(logger *logrus.Logger) {
-// 	if err := migrations.Migrate(ce.DB); err != nil {
-// 		logger.Fatalf("❌ Migration failed: %v", err)
-// 	}
-// 	logger.Println("✅ Migration completed")
-// }
+func (ce *CommandExecutor) handleMigrate(logger *logrus.Logger) {
+	if err := migrations.Migrate(ce.DB); err != nil {
+		logger.Fatalf("❌ Migration failed: %v", err)
+	}
+	logger.Println("✅ Migration completed")
+}
 
-// func (ce *CommandExecutor) handleSeed(logger *logrus.Logger) {
-// 	if err := migrations.Seeder(ce.DB, logger); err != nil {
-// 		logger.Fatalf("❌ Seeder failed: %v", err)
-// 	}
-// 	logger.Println("✅ Seeder completed")
-// }
+func (ce *CommandExecutor) handleSeed(logger *logrus.Logger) {
+	if err := migrations.Seeder(ce.DB, logger); err != nil {
+		logger.Fatalf("❌ Seeder failed: %v", err)
+	}
+	logger.Println("✅ Seeder completed")
+}

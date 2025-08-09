@@ -1,0 +1,68 @@
+[
+  {
+    "id": "11111111-1111-1111-1111-111111111111",
+    "name": "Samsung Galaxy S24 Ultra",
+    "description": "Smartphone flagship dengan kamera 200MP dan performa tinggi.",
+    "category": ["smartphone"],
+    "brand": "Samsung",
+    "color": ["hitam", "perak"],
+    "specs": {
+      "ram": "12GB",
+      "storage": "512GB",
+      "cpu": "Snapdragon 8 Gen 3",
+      "gpu": "Adreno 750",
+      "display_size": "6.8 inci",
+      "type": "AMOLED",
+      "use_case": ["fotografi", "gaming"],
+      "target_user": ["profesional", "gamer"]
+    },
+    "price": 21999000.0,
+    "created_by": "00000000-0000-0000-0000-000000000000",
+    "created_at": "2025-08-09T10:00:00Z",
+    "updated_at": "2025-08-09T10:00:00Z"
+  },
+  {
+    "id": "22222222-2222-2222-2222-222222222222",
+    "name": "MacBook Pro 14 M3 Pro",
+    "description": "Laptop profesional dengan chip Apple M3 Pro dan layar Liquid Retina XDR.",
+    "category": ["laptop"],
+    "brand": "Apple",
+    "color": ["abu-abu", "perak"],
+    "specs": {
+      "ram": "16GB",
+      "storage": "1TB SSD",
+      "cpu": "Apple M3 Pro",
+      "gpu": "Integrated 16-core GPU",
+      "display_size": "14.2 inci",
+      "type": "Liquid Retina XDR",
+      "use_case": ["desain grafis", "pengembangan perangkat lunak"],
+      "target_user": ["desainer", "developer"]
+    },
+    "price": 32999000.0,
+    "created_by": "00000000-0000-0000-0000-000000000000",
+    "created_at": "2025-08-09T10:05:00Z",
+    "updated_at": "2025-08-09T10:05:00Z"
+  },
+  {
+    "id": "33333333-3333-3333-3333-333333333333",
+    "name": "ASUS ROG Strix G16",
+    "description": "Laptop gaming dengan performa tinggi dan layar 240Hz.",
+    "category": ["laptop", "gaming"],
+    "brand": "ASUS",
+    "color": ["hitam"],
+    "specs": {
+      "ram": "16GB",
+      "storage": "1TB SSD",
+      "cpu": "Intel Core i9-13980HX",
+      "gpu": "NVIDIA GeForce RTX 4070",
+      "display_size": "16 inci",
+      "type": "IPS 240Hz",
+      "use_case": ["gaming", "streaming"],
+      "target_user": ["gamer", "streamer"]
+    },
+    "price": 27999000.0,
+    "created_by": "00000000-0000-0000-0000-000000000000",
+    "created_at": "2025-08-09T10:10:00Z",
+    "updated_at": "2025-08-09T10:10:00Z"
+  }
+]
