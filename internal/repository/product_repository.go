@@ -25,9 +25,12 @@ func (r *ProductRepository) GetAll(db *gorm.DB, limit, offset int) ([]entity.Pro
 		return nil, 0, err
 	}
 
-	err := r.Repository.FindByConditionWithPagination(db, &products, "", offset/limit+1, limit)
+	err := db.Preload("Images").
+		Limit(limit).
+		Offset(offset).
+		Find(&products).Error
 	if err != nil {
-		r.Log.WithError(err).Error("Failed to find products with pagination")
+		r.Log.WithError(err).Error("Failed to find products with images and pagination")
 		return nil, 0, err
 	}
 

@@ -13,7 +13,7 @@ type ProductImage struct {
 	Position    int       `gorm:"type:int;default:0" json:"position"`
 	CreatedAt   time.Time `gorm:"type:timestamp;not null;autoCreateTime" json:"created_at"`
 	UpdatedAt   time.Time `gorm:"type:timestamp;not null;autoUpdateTime" json:"updated_at"`
-	Product     Product   `gorm:"foreignKey:ProductID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"product"`
+	Product     Product   `gorm:"foreignKey:ProductID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-"`
 }
 
 func (ProductImage) TableName() string {
