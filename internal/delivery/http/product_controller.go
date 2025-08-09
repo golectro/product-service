@@ -1,13 +1,17 @@
 package http
 
 import (
+	"encoding/json"
 	"golectro-product/internal/constants"
+	"golectro-product/internal/delivery/http/middleware"
 	"golectro-product/internal/model"
 	"golectro-product/internal/usecase"
 	"golectro-product/internal/utils"
 	"math"
 	"net/http"
 	"strconv"
+
+	"slices"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -65,5 +69,43 @@ func (c *ProductController) GetAllProducts(ctx *gin.Context) {
 	}
 
 	res := utils.SuccessWithPaginationResponse(ctx, http.StatusOK, constants.SuccessGetProducts, products, pagination)
+	ctx.JSON(res.StatusCode, res)
+}
+
+func (c *ProductController) CreateProduct(ctx *gin.Context) {
+	auth := middleware.GetUser(ctx)
+
+	var roles []string
+	if err := json.Unmarshal(auth.Roles, &roles); err != nil {
+		c.Log.WithError(err).Error("Failed to decode roles")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.InternalServerError, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	isAdmin := slices.Contains(roles, "admin")
+	if !isAdmin {
+		res := utils.FailedResponse(ctx, http.StatusForbidden, constants.AccessDenied, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	request := new(model.CreateProductRequest)
+	if err := ctx.ShouldBindJSON(request); err != nil {
+		c.Log.WithError(err).Error("Failed to bind request")
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidRequestData, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	result, err := c.ProductUseCase.CreateProduct(ctx, request, auth.ID)
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to create product")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.FailedCreateProduct, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	res := utils.SuccessResponse(ctx, http.StatusCreated, constants.SuccessCreateProduct, result)
 	ctx.JSON(res.StatusCode, res)
 }

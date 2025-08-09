@@ -9,4 +9,5 @@ func (c *RouteConfig) RegisterProductRoutes(rg *gin.RouterGroup, minioClient *mi
 	product := rg.Group("/products")
 
 	product.GET("/", c.AuthMiddleware, c.ProductController.GetAllProducts)
+	product.POST("/", c.AuthMiddleware, c.ProductController.CreateProduct)
 }
