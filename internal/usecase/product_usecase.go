@@ -105,8 +105,6 @@ func (uc *ProductUseCase) UploadProductImages(ctx context.Context, productID uui
 		return nil, utils.WrapMessageAsError(constants.FailedGetProductByID)
 	}
 
-	var uploadedImages []entity.ProductImage
-
 	for _, img := range images {
 		fileName, ok := img["file_name"].(string)
 		if !ok || fileName == "" {
@@ -124,8 +122,6 @@ func (uc *ProductUseCase) UploadProductImages(ctx context.Context, productID uui
 			tx.Rollback()
 			return nil, utils.WrapMessageAsError(constants.FailedCreateProduct, err)
 		}
-
-		uploadedImages = append(uploadedImages, productImage)
 	}
 
 	if err := tx.Commit().Error; err != nil {
