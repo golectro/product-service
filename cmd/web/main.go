@@ -17,7 +17,7 @@ func main() {
 	app := config.NewGin(viper, log, mongo, redis)
 	minio := config.NewMinioClient(viper, log)
 	elasticsearch := config.NewElasticSearch(viper, log)
-	executor := command.NewCommandExecutor(db)
+	executor := command.NewCommandExecutor(viper, db)
 
 	config.Bootstrap(&config.BootstrapConfig{
 		Viper:    viper,
