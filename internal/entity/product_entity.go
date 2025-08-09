@@ -12,7 +12,7 @@ type Product struct {
 	Name        string         `gorm:"type:varchar(255);not null" json:"name"`
 	Description string         `gorm:"type:text" json:"description"`
 	Category    datatypes.JSON `gorm:"type:json" json:"category"`
-	Brand       datatypes.JSON `gorm:"type:json" json:"brand"`
+	Brand       string         `gorm:"type:varchar(100);not null" json:"brand"`
 	Color       datatypes.JSON `gorm:"type:json" json:"color"`
 	Specs       datatypes.JSON `gorm:"type:json" json:"specs"`
 	Price       float64        `gorm:"type:decimal(12,2);not null" json:"price"`
