@@ -37,11 +37,13 @@ type BootstrapConfig struct {
 func Bootstrap(config *BootstrapConfig) {
 	productRepository := repository.NewProductRepository(config.Log)
 	minioRepository := repository.NewMinioRepository(config.Minio)
+	imageRepository := repository.NewImageRepository(config.Log)
 
-	productUseCase := usecase.NewProductUsecase(config.DB, config.Log, config.Validate, productRepository)
+	productUseCase := usecase.NewProductUsecase(config.DB, config.Log, config.Validate, productRepository, imageRepository)
 	minioUseCase := usecase.NewMinioUsecase(minioRepository, config.Validate, config.Log)
+	imageUseCase := usecase.NewImageUsecase(config.DB, config.Log, config.Validate, imageRepository)
 
-	productController := http.NewProductController(productUseCase, minioUseCase, config.Log, config.Viper)
+	productController := http.NewProductController(productUseCase, minioUseCase, config.Log, config.Viper, imageUseCase)
 
 	authMiddleware := middleware.NewAuth(config.Viper)
 

@@ -20,4 +20,6 @@ func (c *RouteConfig) RegisterProductRoutes(rg *gin.RouterGroup, minioClient *mi
 		BucketName:    c.Viper.GetString("MINIO_BUCKET_PRODUCT"),
 		AllowedTypes:  []string{"image/jpeg", "image/png", "image/gif"},
 	}), c.ProductController.UploadProductImages)
+	product.GET("/image/:imageID/url", c.AuthMiddleware, c.ProductController.GetProductImageURL)
+	product.GET("/image/:imageID/preview", c.AuthMiddleware, c.ProductController.GetObjectImage)
 }

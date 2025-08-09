@@ -22,14 +22,16 @@ type ProductUseCase struct {
 	Log               *logrus.Logger
 	Validate          *validator.Validate
 	ProductRepository *repository.ProductRepository
+	ProductImageRepository *repository.ImageRepository
 }
 
-func NewProductUsecase(db *gorm.DB, log *logrus.Logger, validate *validator.Validate, productRepository *repository.ProductRepository) *ProductUseCase {
+func NewProductUsecase(db *gorm.DB, log *logrus.Logger, validate *validator.Validate, productRepository *repository.ProductRepository, productImageRepository *repository.ImageRepository) *ProductUseCase {
 	return &ProductUseCase{
 		DB:                db,
 		Log:               log,
 		Validate:          validate,
 		ProductRepository: productRepository,
+		ProductImageRepository: productImageRepository,
 	}
 }
 

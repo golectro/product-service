@@ -58,4 +58,20 @@ var (
 		"en": "Failed to upload product images",
 		"id": "Gagal mengunggah gambar produk",
 	}
+	FailedGetPresignedURL = model.Message{
+		"en": "Failed to get presigned URL",
+		"id": "Gagal mendapatkan URL presigned",
+	}
+	FailedGetImageByID = model.Message{
+		"en": "Failed to get image by ID",
+		"id": "Gagal mendapatkan gambar berdasarkan ID",
+	}
+	FailedGetProductImages = model.Message{
+		"en": "Failed to get product images",
+		"id": "Gagal mendapatkan gambar produk",
+	}
+	ImageNotFound = model.Message{
+		"en": "Image not found",
+		"id": "Gambar tidak ditemukan",
+	}
 )

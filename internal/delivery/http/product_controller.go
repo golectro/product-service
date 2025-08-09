@@ -2,14 +2,18 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"golectro-product/internal/constants"
 	"golectro-product/internal/delivery/http/middleware"
 	"golectro-product/internal/model"
 	"golectro-product/internal/usecase"
 	"golectro-product/internal/utils"
+	"io"
 	"math"
 	"net/http"
+	"path"
 	"strconv"
+	"time"
 
 	"slices"
 
@@ -22,14 +26,16 @@ import (
 type ProductController struct {
 	Log            *logrus.Logger
 	ProductUseCase *usecase.ProductUseCase
+	ImageUseCase *usecase.ImageUseCase
 	MinioUseCase   *usecase.MinioUseCase
 	Viper          *viper.Viper
 }
 
-func NewProductController(userUseCase *usecase.ProductUseCase, minioUseCase *usecase.MinioUseCase, log *logrus.Logger, viper *viper.Viper) *ProductController {
+func NewProductController(userUseCase *usecase.ProductUseCase, minioUseCase *usecase.MinioUseCase, log *logrus.Logger, viper *viper.Viper, imageUseCase *usecase.ImageUseCase) *ProductController {
 	return &ProductController{
 		Log:            log,
 		ProductUseCase: userUseCase,
+		ImageUseCase: imageUseCase,
 		MinioUseCase:   minioUseCase,
 		Viper:          viper,
 	}
@@ -191,4 +197,113 @@ func (c *ProductController) UploadProductImages(ctx *gin.Context) {
 
 	res := utils.SuccessResponse(ctx, http.StatusCreated, constants.SuccessCreateProduct, result)
 	ctx.JSON(res.StatusCode, res)
+}
+
+func (c *ProductController) GetProductImageURL(ctx *gin.Context) {
+	imageID := ctx.Param("imageID")
+	if imageID == "" {
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidProductID, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	imageUUID, err := uuid.Parse(imageID)
+	if err != nil {
+		c.Log.WithError(err).Error("Invalid image ID format")
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidProductIDFormat, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+	result, err := c.ImageUseCase.GetImageByID(ctx, imageUUID)
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to get product image by ID")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.FailedGetProductByID, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	if result == nil {
+		res := utils.FailedResponse(ctx, http.StatusNotFound, constants.ProductNotFound, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	imageURL, err := c.MinioUseCase.GetPresignedURL(ctx, model.PresignedURLInput{
+		Bucket:    c.Viper.GetString("MINIO_BUCKET_PRODUCT"),
+		ObjectKey: result.ImageObject,
+		Expiry:    int64((time.Hour * 24).Seconds()),
+	})
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to get presigned URL for product image")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.FailedGetPresignedURL, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	res := utils.SuccessResponse(ctx, http.StatusOK, constants.SuccessGetProductByID, model.ProductImageURLResponse{
+		ID: result.ID,
+		ProductID: result.ProductID,
+		ImageObject: result.ImageObject,
+		URL:     imageURL,
+	})
+	ctx.JSON(res.StatusCode, res)
+}
+
+func (c *ProductController) GetObjectImage(ctx *gin.Context) {
+	imageID := ctx.Param("imageID")
+	if imageID == "" {
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidProductID, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	imageUUID, err := uuid.Parse(imageID)
+	if err != nil {
+		c.Log.WithError(err).Error("Invalid image ID format")
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidProductIDFormat, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	result, err := c.ImageUseCase.GetImageByID(ctx, imageUUID)
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to get product image by ID")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.FailedGetImageByID, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	if result.ImageObject == "" {
+		res := utils.FailedResponse(ctx, http.StatusNotFound, constants.ProductNotFound, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	object, err := c.MinioUseCase.GetObject(ctx, c.Viper.GetString("MINIO_BUCKET_PRODUCT"), result.ImageObject)
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to get object from Minio")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.FailedGetPresignedURL, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+	defer object.Close()
+
+	info, err := object.Stat()
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to get object info from Minio")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.FailedGetPresignedURL, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	ctx.Header("Content-Type", info.ContentType)
+	ctx.Header("Content-Length", fmt.Sprintf("%d", info.Size))
+	ctx.Header("Content-Disposition", fmt.Sprintf("inline; filename=\"%s\"", path.Base(result.ImageObject)))
+
+	_, err = io.Copy(ctx.Writer, object)
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to write object to response")
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 }

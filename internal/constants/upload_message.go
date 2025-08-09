@@ -28,7 +28,7 @@ var (
 		"id": "File tidak ditemukan",
 	}
 	FailedUploadObject = model.Message{
-		"en": "Failed to upload avatar",
-		"id": "Gagal mengunggah avatar",
+		"en": "Failed to upload object",
+		"id": "Gagal mengunggah objek",
 	}
 )

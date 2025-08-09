@@ -32,4 +32,11 @@ type (
 		ProductID uuid.UUID `json:"product_id"`
 		Images    []string  `json:"images"`
 	}
+
+	ProductImageURLResponse struct {
+		ID          uuid.UUID `json:"id"`
+		ProductID   uuid.UUID `json:"product_id"`
+		ImageObject string    `json:"image_object"`
+		URL         string    `json:"url"`
+	}
 )
