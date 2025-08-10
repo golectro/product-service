@@ -98,7 +98,7 @@ func (c *ProductController) GetProductByID(ctx *gin.Context) {
 	product, err := c.ProductUseCase.GetProductByID(ctx, productUUID)
 	if err != nil {
 		c.Log.WithError(err).Error("Failed to get product by ID")
-		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.FailedGetProductByID, err)
+		res := utils.FailedResponse(ctx, http.StatusNotFound, constants.FailedGetProductByID, err)
 		ctx.AbortWithStatusJSON(res.StatusCode, res)
 		return
 	}
@@ -359,4 +359,57 @@ func (c *ProductController) GetObjectImage(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+}
+
+func (c *ProductController) DeleteProduct(ctx *gin.Context) {
+	auth := middleware.GetUser(ctx)
+
+	var roles []string
+	if err := json.Unmarshal(auth.Roles, &roles); err != nil {
+		c.Log.WithError(err).Error("Failed to decode roles")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.InternalServerError, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	isAdmin := slices.Contains(roles, "admin")
+	if !isAdmin {
+		res := utils.FailedResponse(ctx, http.StatusForbidden, constants.AccessDenied, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	productID := ctx.Param("productID")
+	if productID == "" {
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidProductID, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	productUUID, err := uuid.Parse(productID)
+	if err != nil {
+		c.Log.WithError(err).Error("Invalid product ID format")
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidProductIDFormat, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	product, err := c.ProductUseCase.GetProduct(ctx, productUUID)
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to get product by ID")
+		res := utils.FailedResponse(ctx, http.StatusNotFound, constants.FailedGetProductByID, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	err = c.ProductUseCase.DeleteProduct(ctx, product)
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to delete product")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.FailedDeleteProduct, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	res := utils.SuccessResponse(ctx, http.StatusOK, constants.SuccessDeleteProduct, true)
+	ctx.JSON(res.StatusCode, res)
 }

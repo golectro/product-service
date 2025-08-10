@@ -53,7 +53,7 @@ func (uc *ProductUseCase) GetProductByID(ctx context.Context, productID uuid.UUI
 	product, err := uc.ProductRepository.FindProductById(uc.DB.WithContext(ctx), productID)
 	if err != nil {
 		uc.Log.WithError(err).Error("Failed to find product by ID")
-		return nil, utils.WrapMessageAsError(constants.FailedGetProductByID)
+		return nil, utils.WrapMessageAsError(constants.FailedGetProductByID, err)
 	}
 
 	if product == nil {
@@ -61,6 +61,23 @@ func (uc *ProductUseCase) GetProductByID(ctx context.Context, productID uuid.UUI
 	}
 
 	return converter.ToProductResponse(product), nil
+}
+
+func (uc *ProductUseCase) GetProduct(ctx context.Context, productID uuid.UUID) (*entity.Product, error) {
+	tx := uc.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	product, err := uc.ProductRepository.FindProductById(tx, productID)
+	if err != nil {
+		uc.Log.WithError(err).Error("Failed to find product by ID")
+		return nil, utils.WrapMessageAsError(constants.FailedGetProductByID, err)
+	}
+
+	if product == nil {
+		return nil, utils.WrapMessageAsError(constants.ProductNotFound)
+	}
+
+	return product, nil
 }
 
 func (uc *ProductUseCase) CreateProduct(ctx context.Context, request *model.CreateProductRequest, userID uuid.UUID) (*model.CreateProductResponse, error) {
@@ -159,10 +176,32 @@ func (uc *ProductUseCase) UpdateProduct(ctx context.Context, productID uuid.UUID
 
 	if err := uc.ElasticsearchUseCase.InsertDocument(product.ID, product); err != nil {
 		uc.Log.WithError(err).Error("Failed to update product in Elasticsearch")
-		return nil, utils.WrapMessageAsError(constants.FailedInsertProductToElasticsearch, err)
+		return nil, utils.WrapMessageAsError(constants.FailedUpdateProductInElasticsearch, err)
 	}
 
 	return converter.ToProductResponse(product), nil
+}
+
+func (uc *ProductUseCase) DeleteProduct(ctx context.Context, product *entity.Product) error {
+	tx := uc.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	if err := uc.ProductRepository.Delete(tx, product); err != nil {
+		uc.Log.WithError(err).Error("Failed to delete product")
+		return utils.WrapMessageAsError(constants.FailedDeleteProduct, err)
+	}
+
+	if err := uc.ElasticsearchUseCase.DeleteDocumentByID(product.ID.String()); err != nil {
+		uc.Log.WithError(err).Error("Failed to delete product from Elasticsearch")
+		return utils.WrapMessageAsError(constants.FailedDeleteProductFromElasticsearch, err)
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		uc.Log.WithError(err).Error("Failed to commit transaction for product deletion")
+		return utils.WrapMessageAsError(constants.FailedDeleteProduct, err)
+	}
+
+	return nil
 }
 
 func (uc *ProductUseCase) UploadProductImages(ctx context.Context, productID uuid.UUID, images []map[string]any) (*model.UploadFilesResponse, error) {

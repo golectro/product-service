@@ -23,4 +23,5 @@ func (c *RouteConfig) RegisterProductRoutes(rg *gin.RouterGroup, minioClient *mi
 	}), c.ProductController.UploadProductImages)
 	product.GET("/image/:imageID/url", c.AuthMiddleware, c.ProductController.GetProductImageURL)
 	product.GET("/image/:imageID/preview", c.AuthMiddleware, c.ProductController.GetObjectImage)
+	product.DELETE("/:productID", c.AuthMiddleware, c.ProductController.DeleteProduct)
 }
