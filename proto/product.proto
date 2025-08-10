@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package product;
+
+option go_package = "golectro-product/internal/delivery/grpc/proto/product;product";
+
+service ProductService {
+  rpc GetProductById (GetProductByIdRequest) returns (GetProductByIdResponse);
+}
+
+message GetProductByIdRequest {
+  string id = 1;
+}
+
+message GetProductByIdResponse {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string category = 4;
+  string brand = 5;
+  string color = 6;
+  string specs = 7;
+  double price = 8;
+  string created_by = 9;
+}
