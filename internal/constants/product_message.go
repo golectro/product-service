@@ -98,4 +98,8 @@ var (
 		"en": "Failed to commit transaction",
 		"id": "Gagal mengkomit transaksi",
 	}
+	FailedDeleteImageFromMinio = model.Message{
+		"en": "Failed to delete image from Minio",
+		"id": "Gagal menghapus gambar dari Minio",
+	}
 )

@@ -58,11 +58,6 @@ func (uc *ImageUseCase) DeleteImage(ctx context.Context, imageID *entity.Product
 		return utils.WrapMessageAsError(constants.FailedDeleteImage, err)
 	}
 
-	if err := uc.ElasticsearchUseCase.DeleteDocumentByID(imageID.ID.String()); err != nil {
-		uc.Log.WithError(err).Error("Failed to delete image from Elasticsearch")
-		return utils.WrapMessageAsError(constants.FailedDeleteImageFromElasticsearch, err)
-	}
-
 	if err := tx.Commit().Error; err != nil {
 		uc.Log.WithError(err).Error("Failed to commit transaction")
 		return utils.WrapMessageAsError(constants.FailedCommitTransaction, err)

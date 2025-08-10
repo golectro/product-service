@@ -469,6 +469,14 @@ func (c *ProductController) DeleteProductImage(ctx *gin.Context) {
 		return
 	}
 
+	err = c.MinioUseCase.Delete(ctx, c.Viper.GetString("MINIO_BUCKET_PRODUCT"), image.ImageObject)
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to delete image from Minio")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.FailedDeleteImageFromMinio, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
 	res := utils.SuccessResponse(ctx, http.StatusOK, constants.SuccessDeleteProductImage, true)
 	ctx.JSON(res.StatusCode, res)
 }
