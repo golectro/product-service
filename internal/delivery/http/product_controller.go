@@ -413,3 +413,62 @@ func (c *ProductController) DeleteProduct(ctx *gin.Context) {
 	res := utils.SuccessResponse(ctx, http.StatusOK, constants.SuccessDeleteProduct, true)
 	ctx.JSON(res.StatusCode, res)
 }
+
+func (c *ProductController) DeleteProductImage(ctx *gin.Context) {
+	auth := middleware.GetUser(ctx)
+
+	var roles []string
+	if err := json.Unmarshal(auth.Roles, &roles); err != nil {
+		c.Log.WithError(err).Error("Failed to decode roles")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.InternalServerError, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	isAdmin := slices.Contains(roles, "admin")
+	if !isAdmin {
+		res := utils.FailedResponse(ctx, http.StatusForbidden, constants.AccessDenied, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	imageID := ctx.Param("imageID")
+	if imageID == "" {
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidProductID, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	imageUUID, err := uuid.Parse(imageID)
+	if err != nil {
+		c.Log.WithError(err).Error("Invalid image ID format")
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidProductIDFormat, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	image, err := c.ImageUseCase.GetImageByID(ctx, imageUUID)
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to get image by ID")
+		res := utils.FailedResponse(ctx, http.StatusNotFound, constants.FailedGetImageByID, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	if image == nil {
+		res := utils.FailedResponse(ctx, http.StatusNotFound, constants.ImageNotFound, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	err = c.ImageUseCase.DeleteImage(ctx, image)
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to delete product image")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.FailedDeleteProductImage, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	res := utils.SuccessResponse(ctx, http.StatusOK, constants.SuccessDeleteProductImage, true)
+	ctx.JSON(res.StatusCode, res)
+}

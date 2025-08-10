@@ -40,7 +40,7 @@ func (r *ProductRepository) GetAll(db *gorm.DB, limit, offset int) ([]entity.Pro
 
 func (r *ProductRepository) FindProductById(db *gorm.DB, productID uuid.UUID) (*entity.Product, error) {
 	var product entity.Product
-	
+
 	if err := db.Preload("Images").First(&product, "id = ?", productID).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil

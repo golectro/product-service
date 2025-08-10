@@ -15,6 +15,10 @@ var (
 		"en": "Successfully retrieved product by ID",
 		"id": "Berhasil mendapatkan produk berdasarkan ID",
 	}
+	SuccessDeleteProductImage = model.Message{
+		"en": "Successfully deleted product image",
+		"id": "Berhasil menghapus gambar produk",
+	}
 )
 
 var (
@@ -81,5 +85,17 @@ var (
 	FailedDeleteProduct = model.Message{
 		"en": "Failed to delete product",
 		"id": "Gagal menghapus produk",
+	}
+	FailedDeleteProductImage = model.Message{
+		"en": "Failed to delete product image",
+		"id": "Gagal menghapus gambar produk",
+	}
+	FailedDeleteImage = model.Message{
+		"en": "Failed to delete image",
+		"id": "Gagal menghapus gambar",
+	}
+	FailedCommitTransaction = model.Message{
+		"en": "Failed to commit transaction",
+		"id": "Gagal mengkomit transaksi",
 	}
 )

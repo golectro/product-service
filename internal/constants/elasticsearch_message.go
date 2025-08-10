@@ -15,4 +15,8 @@ var (
 		"en": "Failed to update product in Elasticsearch",
 		"id": "Gagal memperbarui produk di Elasticsearch",
 	}
+	FailedDeleteImageFromElasticsearch = model.Message{
+		"en": "Failed to delete image from Elasticsearch",
+		"id": "Gagal menghapus gambar dari Elasticsearch",
+	}
 )
