@@ -23,15 +23,17 @@ type ProductUseCase struct {
 	Validate               *validator.Validate
 	ProductRepository      *repository.ProductRepository
 	ProductImageRepository *repository.ImageRepository
+	ElasticsearchUseCase   *ElasticsearchUseCase
 }
 
-func NewProductUsecase(db *gorm.DB, log *logrus.Logger, validate *validator.Validate, productRepository *repository.ProductRepository, productImageRepository *repository.ImageRepository) *ProductUseCase {
+func NewProductUsecase(db *gorm.DB, log *logrus.Logger, validate *validator.Validate, productRepository *repository.ProductRepository, productImageRepository *repository.ImageRepository, elasticsearchUseCase *ElasticsearchUseCase) *ProductUseCase {
 	return &ProductUseCase{
 		DB:                     db,
 		Log:                    log,
 		Validate:               validate,
 		ProductRepository:      productRepository,
 		ProductImageRepository: productImageRepository,
+		ElasticsearchUseCase:   elasticsearchUseCase,
 	}
 }
 
@@ -70,8 +72,9 @@ func (uc *ProductUseCase) CreateProduct(ctx context.Context, request *model.Crea
 		return nil, utils.WrapMessageAsError(message)
 	}
 
+	productID := uuid.New()
 	entityProduct := &entity.Product{
-		ID:          uuid.New(),
+		ID:          productID,
 		Name:        request.Name,
 		Description: request.Description,
 		Category:    request.Category,
@@ -94,7 +97,72 @@ func (uc *ProductUseCase) CreateProduct(ctx context.Context, request *model.Crea
 		return nil, utils.WrapMessageAsError(constants.FailedCreateProduct, err)
 	}
 
+	if err := uc.ElasticsearchUseCase.InsertDocument(productID, entityProduct); err != nil {
+		uc.Log.WithError(err).Error("Failed to insert product into Elasticsearch")
+		return nil, utils.WrapMessageAsError(constants.FailedInsertProductToElasticsearch, err)
+	}
+
 	return converter.ToProductResponse(entityProduct), nil
+}
+
+func (uc *ProductUseCase) UpdateProduct(ctx context.Context, productID uuid.UUID, request *model.UpdateProductRequest) (*model.CreateProductResponse, error) {
+	tx := uc.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	product, err := uc.ProductRepository.FindProductById(tx, productID)
+	if err != nil {
+		uc.Log.WithError(err).Error("Failed to find product by ID")
+		return nil, utils.WrapMessageAsError(constants.FailedGetProductByID)
+	}
+
+	if product == nil {
+		return nil, utils.WrapMessageAsError(constants.ProductNotFound)
+	}
+
+	if err := uc.Validate.Struct(request); err != nil {
+		message := utils.TranslateValidationError(uc.Validate, err)
+		return nil, utils.WrapMessageAsError(message)
+	}
+
+	if request.Name != nil {
+		product.Name = *request.Name
+	}
+	if request.Description != nil {
+		product.Description = *request.Description
+	}
+	if request.Category != nil {
+		product.Category = *request.Category
+	}
+	if request.Brand != nil {
+		product.Brand = *request.Brand
+	}
+	if request.Color != nil {
+		product.Color = *request.Color
+	}
+	if request.Specs != nil {
+		product.Specs = *request.Specs
+	}
+	if request.Price != nil {
+		product.Price = *request.Price
+	}
+	product.UpdatedAt = time.Now()
+
+	if err := tx.Save(product).Error; err != nil {
+		uc.Log.WithError(err).Error("Failed to update product")
+		return nil, utils.WrapMessageAsError(constants.FailedUpdateProduct, err)
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		uc.Log.WithError(err).Error("Failed to commit transaction for product update")
+		return nil, utils.WrapMessageAsError(constants.FailedUpdateProduct, err)
+	}
+
+	if err := uc.ElasticsearchUseCase.InsertDocument(product.ID, product); err != nil {
+		uc.Log.WithError(err).Error("Failed to update product in Elasticsearch")
+		return nil, utils.WrapMessageAsError(constants.FailedInsertProductToElasticsearch, err)
+	}
+
+	return converter.ToProductResponse(product), nil
 }
 
 func (uc *ProductUseCase) UploadProductImages(ctx context.Context, productID uuid.UUID, images []map[string]any) (*model.UploadFilesResponse, error) {

@@ -145,6 +145,59 @@ func (c *ProductController) CreateProduct(ctx *gin.Context) {
 	ctx.JSON(res.StatusCode, res)
 }
 
+func (c *ProductController) UpdateProduct(ctx *gin.Context) {
+	auth := middleware.GetUser(ctx)
+
+	var roles []string
+	if err := json.Unmarshal(auth.Roles, &roles); err != nil {
+		c.Log.WithError(err).Error("Failed to decode roles")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.InternalServerError, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	isAdmin := slices.Contains(roles, "admin")
+	if !isAdmin {
+		res := utils.FailedResponse(ctx, http.StatusForbidden, constants.AccessDenied, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	productID := ctx.Param("productID")
+	if productID == "" {
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidProductID, nil)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	productUUID, err := uuid.Parse(productID)
+	if err != nil {
+		c.Log.WithError(err).Error("Invalid product ID format")
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidProductIDFormat, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	request := new(model.UpdateProductRequest)
+	if err := ctx.ShouldBindJSON(request); err != nil {
+		c.Log.WithError(err).Error("Failed to bind request")
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidRequestData, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	result, err := c.ProductUseCase.UpdateProduct(ctx, productUUID, request)
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to update product")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.FailedUpdateProduct, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	res := utils.SuccessResponse(ctx, http.StatusOK, constants.SuccessUpdateProduct, result)
+	ctx.JSON(res.StatusCode, res)
+}
+
 func (c *ProductController) UploadProductImages(ctx *gin.Context) {
 	auth := middleware.GetUser(ctx)
 

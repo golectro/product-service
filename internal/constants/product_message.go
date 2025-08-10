@@ -74,4 +74,12 @@ var (
 		"en": "Image not found",
 		"id": "Gambar tidak ditemukan",
 	}
+	FailedUpdateProduct = model.Message{
+		"en": "Failed to update product",
+		"id": "Gagal memperbarui produk",
+	}
+	FailedDeleteProduct = model.Message{
+		"en": "Failed to delete product",
+		"id": "Gagal menghapus produk",
+	}
 )

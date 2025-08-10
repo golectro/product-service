@@ -3,6 +3,17 @@ package constants
 import "golectro-product/internal/model"
 
 var (
+	SuccessUpdateProduct = model.Message{
+		"en": "Successfully updated product",
+		"id": "Berhasil memperbarui produk",
+	}
+	SuccessDeleteProduct = model.Message{
+		"en": "Successfully deleted product",
+		"id": "Berhasil menghapus produk",
+	}
+)
+
+var (
 	WelcomeMessage = model.Message{
 		"en": "Welcome to Golectro User API",
 		"id": "Selamat datang di Golectro User API",

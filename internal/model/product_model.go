@@ -28,6 +28,16 @@ type (
 		CreatedBy   uuid.UUID      `json:"created_by"`
 	}
 
+	UpdateProductRequest struct {
+		Name        *string         `json:"name,omitempty" validate:"max=255"`
+		Description *string         `json:"description,omitempty" validate:"max=2000"`
+		Category    *datatypes.JSON `json:"category,omitempty"`
+		Brand       *string         `json:"brand,omitempty" validate:"max=100"`
+		Color       *datatypes.JSON `json:"color,omitempty"`
+		Specs       *datatypes.JSON `json:"specs,omitempty"`
+		Price       *float64        `json:"price,omitempty"`
+	}
+
 	UploadFilesResponse struct {
 		ProductID uuid.UUID `json:"product_id"`
 		Images    []string  `json:"images"`

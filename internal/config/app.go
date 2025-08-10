@@ -39,7 +39,8 @@ func Bootstrap(config *BootstrapConfig) {
 	minioRepository := repository.NewMinioRepository(config.Minio)
 	imageRepository := repository.NewImageRepository(config.Log)
 
-	productUseCase := usecase.NewProductUsecase(config.DB, config.Log, config.Validate, productRepository, imageRepository)
+	elasticsearchUseCase := usecase.NewElasticsearchUsecase(config.Elastic, config.Log, config.Validate, config.Viper)
+	productUseCase := usecase.NewProductUsecase(config.DB, config.Log, config.Validate, productRepository, imageRepository, elasticsearchUseCase)
 	minioUseCase := usecase.NewMinioUsecase(minioRepository, config.Validate, config.Log)
 	imageUseCase := usecase.NewImageUsecase(config.DB, config.Log, config.Validate, imageRepository)
 
