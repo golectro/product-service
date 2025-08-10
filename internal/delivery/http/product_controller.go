@@ -24,20 +24,22 @@ import (
 )
 
 type ProductController struct {
-	Log            *logrus.Logger
-	ProductUseCase *usecase.ProductUseCase
-	ImageUseCase   *usecase.ImageUseCase
-	MinioUseCase   *usecase.MinioUseCase
-	Viper          *viper.Viper
+	Log                  *logrus.Logger
+	ProductUseCase       *usecase.ProductUseCase
+	ImageUseCase         *usecase.ImageUseCase
+	MinioUseCase         *usecase.MinioUseCase
+	ElasticsearchUseCase *usecase.ElasticsearchUseCase
+	Viper                *viper.Viper
 }
 
-func NewProductController(userUseCase *usecase.ProductUseCase, minioUseCase *usecase.MinioUseCase, log *logrus.Logger, viper *viper.Viper, imageUseCase *usecase.ImageUseCase) *ProductController {
+func NewProductController(userUseCase *usecase.ProductUseCase, minioUseCase *usecase.MinioUseCase, log *logrus.Logger, viper *viper.Viper, imageUseCase *usecase.ImageUseCase, elasticUseCase *usecase.ElasticsearchUseCase) *ProductController {
 	return &ProductController{
-		Log:            log,
-		ProductUseCase: userUseCase,
-		ImageUseCase:   imageUseCase,
-		MinioUseCase:   minioUseCase,
-		Viper:          viper,
+		Log:                  log,
+		ProductUseCase:       userUseCase,
+		ImageUseCase:         imageUseCase,
+		MinioUseCase:         minioUseCase,
+		ElasticsearchUseCase: elasticUseCase,
+		Viper:                viper,
 	}
 }
 
@@ -104,6 +106,48 @@ func (c *ProductController) GetProductByID(ctx *gin.Context) {
 	}
 
 	res := utils.SuccessResponse(ctx, http.StatusOK, constants.SuccessGetProductByID, product)
+	ctx.JSON(res.StatusCode, res)
+}
+
+func (c *ProductController) SearchProducts(ctx *gin.Context) {
+	request := new(model.SearchProductsRequest)
+	if err := ctx.ShouldBindQuery(request); err != nil {
+		c.Log.WithError(err).Error("Failed to bind search request")
+		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidSearchRequest, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	query := utils.BuildElasticQuery(ctx.Request.URL.Query())
+
+	products, total, err := c.ElasticsearchUseCase.SearchProducts(query)
+	if err != nil {
+		c.Log.WithError(err).Error("Failed to search products")
+		res := utils.FailedResponse(ctx, http.StatusInternalServerError, constants.FailedSearchProducts, err)
+		ctx.AbortWithStatusJSON(res.StatusCode, res)
+		return
+	}
+
+	if request.Limit == nil {
+		defaultLimit := 10
+		request.Limit = &defaultLimit
+	}
+	if request.Page == nil {
+		defaultPage := 1
+		request.Page = &defaultPage
+	}
+
+	totalPages := int(math.Ceil(float64(total) / float64(*request.Limit)))
+	pagination := model.PageMetadata{
+		CurrentPage: *request.Page,
+		PageSize:    *request.Limit,
+		TotalPage:   int64(totalPages),
+		TotalItem:   total,
+		HasNext:     *request.Page < totalPages,
+		HasPrevious: *request.Page > 1,
+	}
+
+	res := utils.SuccessWithPaginationResponse(ctx, http.StatusOK, constants.SuccessSearchProducts, products, pagination)
 	ctx.JSON(res.StatusCode, res)
 }
 

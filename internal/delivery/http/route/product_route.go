@@ -12,6 +12,7 @@ func (c *RouteConfig) RegisterProductRoutes(rg *gin.RouterGroup, minioClient *mi
 
 	product.GET("/", c.AuthMiddleware, c.ProductController.GetAllProducts)
 	product.GET("/:productID", c.AuthMiddleware, c.ProductController.GetProductByID)
+	product.GET("/search", c.AuthMiddleware, c.ProductController.SearchProducts)
 	product.POST("/", c.AuthMiddleware, c.ProductController.CreateProduct)
 	product.PUT("/:productID", c.AuthMiddleware, c.ProductController.UpdateProduct)
 	product.POST("/:productID/images", c.AuthMiddleware, middleware.MultipleFileUpload(minioClient, middleware.UploadOptions{

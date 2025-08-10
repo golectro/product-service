@@ -28,6 +28,19 @@ type (
 		CreatedBy   uuid.UUID      `json:"created_by"`
 	}
 
+	SearchProductsRequest struct {
+		Page     *int              `form:"page" validate:"omitempty,min=1"`
+		Limit    *int              `form:"limit" validate:"omitempty,min=1"`
+		Price    *string           `form:"price" validate:"omitempty,oneof=asc desc"`
+		Name     *string           `form:"name" validate:"omitempty,max=255"`
+		Category []string          `form:"category" validate:"omitempty,max=255"`
+		Brand    []string          `form:"brand" validate:"omitempty,max=255"`
+		Color    []string          `form:"color" validate:"omitempty,max=255"`
+		MinPrice *float64          `form:"min_price" validate:"omitempty,gte=0"`
+		MaxPrice *float64          `form:"max_price" validate:"omitempty,gte=0"`
+		Specs    map[string]string `form:"specs" validate:"omitempty"`
+	}
+
 	UpdateProductRequest struct {
 		Name        *string         `json:"name,omitempty" validate:"max=255"`
 		Description *string         `json:"description,omitempty" validate:"max=2000"`

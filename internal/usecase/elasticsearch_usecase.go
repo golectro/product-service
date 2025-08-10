@@ -3,6 +3,7 @@ package usecase
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/go-playground/validator/v10"
@@ -68,4 +69,59 @@ func (e *ElasticsearchUseCase) DeleteDocumentByID(id string) error {
 	}
 
 	return nil
+}
+
+func (e *ElasticsearchUseCase) SearchProducts(query map[string]any) ([]map[string]any, int64, error) {
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		e.Log.WithError(err).Error("Failed to encode search query")
+		return nil, 0, err
+	}
+
+	res, err := e.Elasticsearch.Search(
+		e.Elasticsearch.Search.WithIndex(e.Viper.GetString("ELASTICSEARCH_INDEX")),
+		e.Elasticsearch.Search.WithBody(&buf),
+		e.Elasticsearch.Search.WithTrackTotalHits(true),
+		e.Elasticsearch.Search.WithPretty(),
+	)
+	if err != nil {
+		e.Log.WithError(err).Error("Failed to execute search query")
+		return nil, 0, err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		e.Log.Errorf("Elasticsearch search error: %s", res.String())
+		return nil, 0, fmt.Errorf("search request failed: %s", res.String())
+	}
+
+	var result map[string]any
+	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
+		e.Log.WithError(err).Error("Failed to decode search response")
+		return nil, 0, err
+	}
+
+	hitsData, ok := result["hits"].(map[string]any)
+	if !ok {
+		return nil, 0, fmt.Errorf("unexpected hits format")
+	}
+
+	totalObj, ok := hitsData["total"].(map[string]any)
+	if !ok {
+		return nil, 0, fmt.Errorf("unexpected total format")
+	}
+	totalValue := int64(totalObj["value"].(float64))
+
+	var products []map[string]any
+	if hitsArray, ok := hitsData["hits"].([]any); ok {
+		for _, h := range hitsArray {
+			if hit, ok := h.(map[string]any); ok {
+				if src, ok := hit["_source"].(map[string]any); ok {
+					products = append(products, src)
+				}
+			}
+		}
+	}
+
+	return products, totalValue, nil
 }

@@ -19,6 +19,10 @@ var (
 		"en": "Successfully deleted product image",
 		"id": "Berhasil menghapus gambar produk",
 	}
+	SuccessSearchProducts = model.Message{
+		"en": "Successfully searched products",
+		"id": "Berhasil mencari produk",
+	}
 )
 
 var (
@@ -49,6 +53,14 @@ var (
 	FailedGetProductByID = model.Message{
 		"en": "Failed to get product by ID",
 		"id": "Gagal mendapatkan produk berdasarkan ID",
+	}
+	InvalidSearchRequest = model.Message{
+		"en": "Invalid search request",
+		"id": "Permintaan pencarian tidak valid",
+	}
+	FailedSearchProducts = model.Message{
+		"en": "Failed to search products",
+		"id": "Gagal mencari produk",
 	}
 	ProductNotFound = model.Message{
 		"en": "Product not found",
