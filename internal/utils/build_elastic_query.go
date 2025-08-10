@@ -95,12 +95,17 @@ func BuildElasticQuery(params url.Values) map[string]any {
 	if specs := params.Get("specs"); specs != "" {
 		var specsMap map[string]any
 		if err := json.Unmarshal([]byte(specs), &specsMap); err == nil {
+			shouldClauses := []map[string]any{}
 			for k, v := range specsMap {
-				boolQuery["filter"] = append(boolQuery["filter"].([]map[string]any), map[string]any{
+				shouldClauses = append(shouldClauses, map[string]any{
 					"term": map[string]any{
 						fmt.Sprintf("specs.%s.keyword", k): v,
 					},
 				})
+			}
+			if len(shouldClauses) > 0 {
+				boolQuery["should"] = shouldClauses
+				boolQuery["minimum_should_match"] = 1
 			}
 		}
 	}
