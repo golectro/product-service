@@ -83,3 +83,21 @@ func (h *ProductHandler) GetProductByIds(ctx context.Context, req *proto.GetProd
 
 	return response, nil
 }
+
+func (h *ProductHandler) DecreaseQuantity(ctx context.Context, req *proto.DecreaseQuantityRequest) (*proto.DecreaseQuantityResponse, error) {
+	productID, err := utils.ParseUUID(req.ProductId)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid product ID: %v", err)
+	}
+
+	quantity, err := h.ProductUseCase.DecreaseProductQuantity(ctx, productID, int(req.Quantity))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "%s: %v", constants.FailedDecreaseProductQuantity, err)
+	}
+
+	return &proto.DecreaseQuantityResponse{
+		Success:     true,
+		Message:     "Product quantity decreased successfully",
+		NewQuantity: int32(quantity),
+	}, nil
+}

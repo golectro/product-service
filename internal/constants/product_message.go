@@ -58,6 +58,10 @@ var (
 		"en": "Failed to get products by IDs",
 		"id": "Gagal mendapatkan produk berdasarkan ID",
 	}
+	FailedDecreaseProductQuantity = model.Message{
+		"en": "Failed to decrease product quantity",
+		"id": "Gagal mengurangi jumlah produk",
+	}
 	InvalidSearchRequest = model.Message{
 		"en": "Invalid search request",
 		"id": "Permintaan pencarian tidak valid",
@@ -69,6 +73,10 @@ var (
 	ProductNotFound = model.Message{
 		"en": "Product not found",
 		"id": "Produk tidak ditemukan",
+	}
+	InsufficientProductQuantity = model.Message{
+		"en": "Insufficient product quantity",
+		"id": "Jumlah produk tidak mencukupi",
 	}
 	InvalidProductIDFormat = model.Message{
 		"en": "Invalid product ID format",

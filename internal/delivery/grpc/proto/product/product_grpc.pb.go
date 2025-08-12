@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProductService_GetProductById_FullMethodName  = "/product.ProductService/GetProductById"
-	ProductService_GetProductByIds_FullMethodName = "/product.ProductService/GetProductByIds"
+	ProductService_GetProductById_FullMethodName   = "/product.ProductService/GetProductById"
+	ProductService_GetProductByIds_FullMethodName  = "/product.ProductService/GetProductByIds"
+	ProductService_DecreaseQuantity_FullMethodName = "/product.ProductService/DecreaseQuantity"
 )
 
 // ProductServiceClient is the client API for ProductService service.
@@ -29,6 +30,7 @@ const (
 type ProductServiceClient interface {
 	GetProductById(ctx context.Context, in *GetProductByIdRequest, opts ...grpc.CallOption) (*GetProductByIdResponse, error)
 	GetProductByIds(ctx context.Context, in *GetProductByIdsRequest, opts ...grpc.CallOption) (*GetProductByIdsResponse, error)
+	DecreaseQuantity(ctx context.Context, in *DecreaseQuantityRequest, opts ...grpc.CallOption) (*DecreaseQuantityResponse, error)
 }
 
 type productServiceClient struct {
@@ -59,12 +61,23 @@ func (c *productServiceClient) GetProductByIds(ctx context.Context, in *GetProdu
 	return out, nil
 }
 
+func (c *productServiceClient) DecreaseQuantity(ctx context.Context, in *DecreaseQuantityRequest, opts ...grpc.CallOption) (*DecreaseQuantityResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DecreaseQuantityResponse)
+	err := c.cc.Invoke(ctx, ProductService_DecreaseQuantity_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductServiceServer is the server API for ProductService service.
 // All implementations must embed UnimplementedProductServiceServer
 // for forward compatibility.
 type ProductServiceServer interface {
 	GetProductById(context.Context, *GetProductByIdRequest) (*GetProductByIdResponse, error)
 	GetProductByIds(context.Context, *GetProductByIdsRequest) (*GetProductByIdsResponse, error)
+	DecreaseQuantity(context.Context, *DecreaseQuantityRequest) (*DecreaseQuantityResponse, error)
 	mustEmbedUnimplementedProductServiceServer()
 }
 
@@ -80,6 +93,9 @@ func (UnimplementedProductServiceServer) GetProductById(context.Context, *GetPro
 }
 func (UnimplementedProductServiceServer) GetProductByIds(context.Context, *GetProductByIdsRequest) (*GetProductByIdsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProductByIds not implemented")
+}
+func (UnimplementedProductServiceServer) DecreaseQuantity(context.Context, *DecreaseQuantityRequest) (*DecreaseQuantityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DecreaseQuantity not implemented")
 }
 func (UnimplementedProductServiceServer) mustEmbedUnimplementedProductServiceServer() {}
 func (UnimplementedProductServiceServer) testEmbeddedByValue()                        {}
@@ -138,6 +154,24 @@ func _ProductService_GetProductByIds_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductService_DecreaseQuantity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DecreaseQuantityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).DecreaseQuantity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_DecreaseQuantity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).DecreaseQuantity(ctx, req.(*DecreaseQuantityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductService_ServiceDesc is the grpc.ServiceDesc for ProductService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +186,10 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProductByIds",
 			Handler:    _ProductService_GetProductByIds_Handler,
+		},
+		{
+			MethodName: "DecreaseQuantity",
+			Handler:    _ProductService_DecreaseQuantity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

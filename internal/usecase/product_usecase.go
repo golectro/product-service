@@ -275,3 +275,42 @@ func extractImageURLs(images []map[string]any) []string {
 	}
 	return urls
 }
+
+func (uc *ProductUseCase) DecreaseProductQuantity(ctx context.Context, productID uuid.UUID, quantity int) (int32, error) {
+	tx := uc.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	product, err := uc.ProductRepository.FindProductById(tx, productID)
+	if err != nil {
+		uc.Log.WithError(err).Error("Failed to find product by ID")
+		return 0, utils.WrapMessageAsError(constants.FailedGetProductByID)
+	}
+
+	if product == nil {
+		return 0, utils.WrapMessageAsError(constants.ProductNotFound)
+	}
+
+	if product.Quantity < quantity {
+		return 0, utils.WrapMessageAsError(constants.InsufficientProductQuantity)
+	}
+
+	product.Quantity -= quantity
+	product.UpdatedAt = time.Now()
+
+	if err := tx.Save(product).Error; err != nil {
+		uc.Log.WithError(err).Error("Failed to decrease product quantity")
+		return 0, utils.WrapMessageAsError(constants.FailedDecreaseProductQuantity, err)
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		uc.Log.WithError(err).Error("Failed to commit transaction for decreasing product quantity")
+		return 0, utils.WrapMessageAsError(constants.FailedDecreaseProductQuantity, err)
+	}
+
+	if err := uc.ElasticsearchUseCase.InsertDocument(product.ID, product); err != nil {
+		uc.Log.WithError(err).Error("Failed to update product in Elasticsearch after decreasing quantity")
+		return 0, utils.WrapMessageAsError(constants.FailedUpdateProductInElasticsearch, err)
+	}
+
+	return int32(product.Quantity), nil
+}
