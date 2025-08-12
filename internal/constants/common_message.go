@@ -15,8 +15,8 @@ var (
 
 var (
 	WelcomeMessage = model.Message{
-		"en": "Welcome to Golectro User API",
-		"id": "Selamat datang di Golectro User API",
+		"en": "Welcome to Golectro Product API",
+		"id": "Selamat datang di Golectro Product API",
 	}
 	NotFound = model.Message{
 		"en": "API not found",
