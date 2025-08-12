@@ -6,7 +6,7 @@ import (
 )
 
 type (
-	CreateProductRequest struct {
+	ProductRequest struct {
 		Name        string         `json:"name" validate:"required,max=255"`
 		Description string         `json:"description" validate:"max=2000"`
 		Category    datatypes.JSON `json:"category"`
@@ -14,9 +14,10 @@ type (
 		Color       datatypes.JSON `json:"color"`
 		Specs       datatypes.JSON `json:"specs"`
 		Price       float64        `json:"price" validate:"required"`
+		Quantity    int            `json:"quantity" validate:"required,gte=0"`
 	}
 
-	CreateProductResponse struct {
+	ProductResponse struct {
 		ID          uuid.UUID      `json:"id"`
 		Name        string         `json:"name"`
 		Description string         `json:"description"`
@@ -25,6 +26,7 @@ type (
 		Color       datatypes.JSON `json:"color"`
 		Specs       datatypes.JSON `json:"specs"`
 		Price       float64        `json:"price"`
+		Quantity    int            `json:"quantity"`
 		CreatedBy   uuid.UUID      `json:"created_by"`
 	}
 
@@ -49,6 +51,7 @@ type (
 		Color       *datatypes.JSON `json:"color,omitempty"`
 		Specs       *datatypes.JSON `json:"specs,omitempty"`
 		Price       *float64        `json:"price,omitempty"`
+		Quantity    *int            `json:"quantity,omitempty" validate:"omitempty,gte=0"`
 	}
 
 	UploadFilesResponse struct {

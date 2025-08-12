@@ -40,6 +40,7 @@ func (h *ProductHandler) GetProductById(ctx context.Context, req *proto.GetProdu
 		Color:       string(product.Color),
 		Specs:       string(product.Specs),
 		Price:       product.Price,
+		Quantity:    int32(product.Quantity),
 		CreatedBy:   product.CreatedBy.String(),
 	}, nil
 }

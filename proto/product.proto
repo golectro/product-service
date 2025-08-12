@@ -21,5 +21,6 @@ message GetProductByIdResponse {
   string color = 6;
   string specs = 7;
   double price = 8;
-  string created_by = 9;
+  int32 quantity = 9;
+  string created_by = 10;
 }

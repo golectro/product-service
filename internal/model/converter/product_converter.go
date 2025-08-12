@@ -5,8 +5,8 @@ import (
 	"golectro-product/internal/model"
 )
 
-func ToProductResponse(product *entity.Product) *model.CreateProductResponse {
-	return &model.CreateProductResponse{
+func ToProductResponse(product *entity.Product) *model.ProductResponse {
+	return &model.ProductResponse{
 		ID:          product.ID,
 		Name:        product.Name,
 		Description: product.Description,
@@ -15,6 +15,7 @@ func ToProductResponse(product *entity.Product) *model.CreateProductResponse {
 		Brand:       product.Brand,
 		Color:       product.Color,
 		Specs:       product.Specs,
+		Quantity:    product.Quantity,
 		CreatedBy:   product.CreatedBy,
 	}
 }

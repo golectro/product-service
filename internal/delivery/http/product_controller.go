@@ -169,7 +169,7 @@ func (c *ProductController) CreateProduct(ctx *gin.Context) {
 		return
 	}
 
-	request := new(model.CreateProductRequest)
+	request := new(model.ProductRequest)
 	if err := ctx.ShouldBindJSON(request); err != nil {
 		c.Log.WithError(err).Error("Failed to bind request")
 		res := utils.FailedResponse(ctx, http.StatusBadRequest, constants.InvalidRequestData, err)

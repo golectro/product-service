@@ -16,6 +16,7 @@ type Product struct {
 	Color       datatypes.JSON `gorm:"type:json" json:"color"`
 	Specs       datatypes.JSON `gorm:"type:json" json:"specs"`
 	Price       float64        `gorm:"type:decimal(12,2);not null" json:"price"`
+	Quantity    int            `gorm:"type:int;not null" json:"quantity"`
 	CreatedBy   uuid.UUID      `gorm:"type:char(36);not null;column:created_by" json:"created_by"`
 	CreatedAt   time.Time      `gorm:"type:timestamp;not null;column:created_at;autoCreateTime" json:"created_at"`
 	UpdatedAt   time.Time      `gorm:"type:timestamp;not null;column:updated_at;autoUpdateTime" json:"updated_at"`

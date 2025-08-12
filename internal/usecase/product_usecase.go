@@ -49,7 +49,7 @@ func (uc *ProductUseCase) GetAllProducts(ctx context.Context, limit, offset int)
 	return products, total, nil
 }
 
-func (uc *ProductUseCase) GetProductByID(ctx context.Context, productID uuid.UUID) (*model.CreateProductResponse, error) {
+func (uc *ProductUseCase) GetProductByID(ctx context.Context, productID uuid.UUID) (*model.ProductResponse, error) {
 	product, err := uc.ProductRepository.FindProductById(uc.DB.WithContext(ctx), productID)
 	if err != nil {
 		uc.Log.WithError(err).Error("Failed to find product by ID")
@@ -80,7 +80,7 @@ func (uc *ProductUseCase) GetProduct(ctx context.Context, productID uuid.UUID) (
 	return product, nil
 }
 
-func (uc *ProductUseCase) CreateProduct(ctx context.Context, request *model.CreateProductRequest, userID uuid.UUID) (*model.CreateProductResponse, error) {
+func (uc *ProductUseCase) CreateProduct(ctx context.Context, request *model.ProductRequest, userID uuid.UUID) (*model.ProductResponse, error) {
 	tx := uc.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -122,7 +122,7 @@ func (uc *ProductUseCase) CreateProduct(ctx context.Context, request *model.Crea
 	return converter.ToProductResponse(entityProduct), nil
 }
 
-func (uc *ProductUseCase) UpdateProduct(ctx context.Context, productID uuid.UUID, request *model.UpdateProductRequest) (*model.CreateProductResponse, error) {
+func (uc *ProductUseCase) UpdateProduct(ctx context.Context, productID uuid.UUID, request *model.UpdateProductRequest) (*model.ProductResponse, error) {
 	tx := uc.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 

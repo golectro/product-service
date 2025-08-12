@@ -75,7 +75,8 @@ type GetProductByIdResponse struct {
 	Color         string                 `protobuf:"bytes,6,opt,name=color,proto3" json:"color,omitempty"`
 	Specs         string                 `protobuf:"bytes,7,opt,name=specs,proto3" json:"specs,omitempty"`
 	Price         float64                `protobuf:"fixed64,8,opt,name=price,proto3" json:"price,omitempty"`
-	CreatedBy     string                 `protobuf:"bytes,9,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	Quantity      int32                  `protobuf:"varint,9,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,10,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -166,6 +167,13 @@ func (x *GetProductByIdResponse) GetPrice() float64 {
 	return 0
 }
 
+func (x *GetProductByIdResponse) GetQuantity() int32 {
+	if x != nil {
+		return x.Quantity
+	}
+	return 0
+}
+
 func (x *GetProductByIdResponse) GetCreatedBy() string {
 	if x != nil {
 		return x.CreatedBy
@@ -179,7 +187,7 @@ const file_product_proto_rawDesc = "" +
 	"\n" +
 	"\rproduct.proto\x12\aproduct\"'\n" +
 	"\x15GetProductByIdRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"\xf1\x01\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x8d\x02\n" +
 	"\x16GetProductByIdResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
@@ -188,9 +196,11 @@ const file_product_proto_rawDesc = "" +
 	"\x05brand\x18\x05 \x01(\tR\x05brand\x12\x14\n" +
 	"\x05color\x18\x06 \x01(\tR\x05color\x12\x14\n" +
 	"\x05specs\x18\a \x01(\tR\x05specs\x12\x14\n" +
-	"\x05price\x18\b \x01(\x01R\x05price\x12\x1d\n" +
+	"\x05price\x18\b \x01(\x01R\x05price\x12\x1a\n" +
+	"\bquantity\x18\t \x01(\x05R\bquantity\x12\x1d\n" +
 	"\n" +
-	"created_by\x18\t \x01(\tR\tcreatedBy2c\n" +
+	"created_by\x18\n" +
+	" \x01(\tR\tcreatedBy2c\n" +
 	"\x0eProductService\x12Q\n" +
 	"\x0eGetProductById\x12\x1e.product.GetProductByIdRequest\x1a\x1f.product.GetProductByIdResponseB?Z=golectro-product/internal/delivery/grpc/proto/product;productb\x06proto3"
 
