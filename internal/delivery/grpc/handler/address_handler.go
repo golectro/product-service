@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"golectro-product/internal/constants"
 	proto "golectro-product/internal/delivery/grpc/proto/product"
 	"golectro-product/internal/usecase"
@@ -99,5 +100,56 @@ func (h *ProductHandler) DecreaseQuantity(ctx context.Context, req *proto.Decrea
 		Success:     true,
 		Message:     "Product quantity decreased successfully",
 		NewQuantity: int32(quantity),
+	}, nil
+}
+
+func (h *ProductHandler) DecreaseQuantityByIds(ctx context.Context, req *proto.DecreaseQuantityByIdsRequest) (*proto.DecreaseQuantityByIdsResponse, error) {
+	if len(req.Items) == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "no product items provided")
+	}
+
+	var results []*proto.DecreaseQuantityResult
+	allSuccess := true
+
+	for i, item := range req.Items {
+		productID, err := utils.ParseUUID(item.ProductId)
+		if err != nil {
+			allSuccess = false
+			results = append(results, &proto.DecreaseQuantityResult{
+				ProductId: item.ProductId,
+				Success:   false,
+				Message:   fmt.Sprintf("invalid product ID at index %d: %v", i, err),
+			})
+			continue
+		}
+
+		newQty, err := h.ProductUseCase.DecreaseProductQuantity(ctx, productID, int(item.Quantity))
+		if err != nil {
+			allSuccess = false
+			results = append(results, &proto.DecreaseQuantityResult{
+				ProductId: item.ProductId,
+				Success:   false,
+				Message:   fmt.Sprintf("failed to decrease quantity: %v", err),
+			})
+			continue
+		}
+
+		results = append(results, &proto.DecreaseQuantityResult{
+			ProductId:   item.ProductId,
+			Success:     true,
+			NewQuantity: int32(newQty),
+			Message:     "quantity decreased successfully",
+		})
+	}
+
+	return &proto.DecreaseQuantityByIdsResponse{
+		Success: allSuccess,
+		Message: func() string {
+			if allSuccess {
+				return "All quantities decreased successfully"
+			}
+			return "Some quantities failed to decrease"
+		}(),
+		Results: results,
 	}, nil
 }

@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProductService_GetProductById_FullMethodName   = "/product.ProductService/GetProductById"
-	ProductService_GetProductByIds_FullMethodName  = "/product.ProductService/GetProductByIds"
-	ProductService_DecreaseQuantity_FullMethodName = "/product.ProductService/DecreaseQuantity"
+	ProductService_GetProductById_FullMethodName        = "/product.ProductService/GetProductById"
+	ProductService_GetProductByIds_FullMethodName       = "/product.ProductService/GetProductByIds"
+	ProductService_DecreaseQuantity_FullMethodName      = "/product.ProductService/DecreaseQuantity"
+	ProductService_DecreaseQuantityByIds_FullMethodName = "/product.ProductService/DecreaseQuantityByIds"
 )
 
 // ProductServiceClient is the client API for ProductService service.
@@ -31,6 +32,7 @@ type ProductServiceClient interface {
 	GetProductById(ctx context.Context, in *GetProductByIdRequest, opts ...grpc.CallOption) (*GetProductByIdResponse, error)
 	GetProductByIds(ctx context.Context, in *GetProductByIdsRequest, opts ...grpc.CallOption) (*GetProductByIdsResponse, error)
 	DecreaseQuantity(ctx context.Context, in *DecreaseQuantityRequest, opts ...grpc.CallOption) (*DecreaseQuantityResponse, error)
+	DecreaseQuantityByIds(ctx context.Context, in *DecreaseQuantityByIdsRequest, opts ...grpc.CallOption) (*DecreaseQuantityByIdsResponse, error)
 }
 
 type productServiceClient struct {
@@ -71,6 +73,16 @@ func (c *productServiceClient) DecreaseQuantity(ctx context.Context, in *Decreas
 	return out, nil
 }
 
+func (c *productServiceClient) DecreaseQuantityByIds(ctx context.Context, in *DecreaseQuantityByIdsRequest, opts ...grpc.CallOption) (*DecreaseQuantityByIdsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DecreaseQuantityByIdsResponse)
+	err := c.cc.Invoke(ctx, ProductService_DecreaseQuantityByIds_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductServiceServer is the server API for ProductService service.
 // All implementations must embed UnimplementedProductServiceServer
 // for forward compatibility.
@@ -78,6 +90,7 @@ type ProductServiceServer interface {
 	GetProductById(context.Context, *GetProductByIdRequest) (*GetProductByIdResponse, error)
 	GetProductByIds(context.Context, *GetProductByIdsRequest) (*GetProductByIdsResponse, error)
 	DecreaseQuantity(context.Context, *DecreaseQuantityRequest) (*DecreaseQuantityResponse, error)
+	DecreaseQuantityByIds(context.Context, *DecreaseQuantityByIdsRequest) (*DecreaseQuantityByIdsResponse, error)
 	mustEmbedUnimplementedProductServiceServer()
 }
 
@@ -96,6 +109,9 @@ func (UnimplementedProductServiceServer) GetProductByIds(context.Context, *GetPr
 }
 func (UnimplementedProductServiceServer) DecreaseQuantity(context.Context, *DecreaseQuantityRequest) (*DecreaseQuantityResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DecreaseQuantity not implemented")
+}
+func (UnimplementedProductServiceServer) DecreaseQuantityByIds(context.Context, *DecreaseQuantityByIdsRequest) (*DecreaseQuantityByIdsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DecreaseQuantityByIds not implemented")
 }
 func (UnimplementedProductServiceServer) mustEmbedUnimplementedProductServiceServer() {}
 func (UnimplementedProductServiceServer) testEmbeddedByValue()                        {}
@@ -172,6 +188,24 @@ func _ProductService_DecreaseQuantity_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductService_DecreaseQuantityByIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DecreaseQuantityByIdsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).DecreaseQuantityByIds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_DecreaseQuantityByIds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).DecreaseQuantityByIds(ctx, req.(*DecreaseQuantityByIdsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductService_ServiceDesc is the grpc.ServiceDesc for ProductService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -190,6 +224,10 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DecreaseQuantity",
 			Handler:    _ProductService_DecreaseQuantity_Handler,
+		},
+		{
+			MethodName: "DecreaseQuantityByIds",
+			Handler:    _ProductService_DecreaseQuantityByIds_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

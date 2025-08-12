@@ -324,7 +324,7 @@ func (x *DecreaseQuantityRequest) GetQuantity() int32 {
 type DecreaseQuantityResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	NewQuantity   int32                  `protobuf:"varint,2,opt,name=newQuantity,proto3" json:"newQuantity,omitempty"`
+	NewQuantity   int32                  `protobuf:"varint,2,opt,name=new_quantity,json=newQuantity,proto3" json:"new_quantity,omitempty"`
 	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -381,6 +381,230 @@ func (x *DecreaseQuantityResponse) GetMessage() string {
 	return ""
 }
 
+type DecreaseQuantityByIdsRequest struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Items         []*DecreaseQuantityItem `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DecreaseQuantityByIdsRequest) Reset() {
+	*x = DecreaseQuantityByIdsRequest{}
+	mi := &file_product_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DecreaseQuantityByIdsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DecreaseQuantityByIdsRequest) ProtoMessage() {}
+
+func (x *DecreaseQuantityByIdsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_product_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DecreaseQuantityByIdsRequest.ProtoReflect.Descriptor instead.
+func (*DecreaseQuantityByIdsRequest) Descriptor() ([]byte, []int) {
+	return file_product_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *DecreaseQuantityByIdsRequest) GetItems() []*DecreaseQuantityItem {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+type DecreaseQuantityItem struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ProductId     string                 `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	Quantity      int32                  `protobuf:"varint,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DecreaseQuantityItem) Reset() {
+	*x = DecreaseQuantityItem{}
+	mi := &file_product_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DecreaseQuantityItem) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DecreaseQuantityItem) ProtoMessage() {}
+
+func (x *DecreaseQuantityItem) ProtoReflect() protoreflect.Message {
+	mi := &file_product_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DecreaseQuantityItem.ProtoReflect.Descriptor instead.
+func (*DecreaseQuantityItem) Descriptor() ([]byte, []int) {
+	return file_product_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *DecreaseQuantityItem) GetProductId() string {
+	if x != nil {
+		return x.ProductId
+	}
+	return ""
+}
+
+func (x *DecreaseQuantityItem) GetQuantity() int32 {
+	if x != nil {
+		return x.Quantity
+	}
+	return 0
+}
+
+type DecreaseQuantityByIdsResponse struct {
+	state         protoimpl.MessageState    `protogen:"open.v1"`
+	Success       bool                      `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                    `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Results       []*DecreaseQuantityResult `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DecreaseQuantityByIdsResponse) Reset() {
+	*x = DecreaseQuantityByIdsResponse{}
+	mi := &file_product_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DecreaseQuantityByIdsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DecreaseQuantityByIdsResponse) ProtoMessage() {}
+
+func (x *DecreaseQuantityByIdsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_product_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DecreaseQuantityByIdsResponse.ProtoReflect.Descriptor instead.
+func (*DecreaseQuantityByIdsResponse) Descriptor() ([]byte, []int) {
+	return file_product_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *DecreaseQuantityByIdsResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *DecreaseQuantityByIdsResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *DecreaseQuantityByIdsResponse) GetResults() []*DecreaseQuantityResult {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+type DecreaseQuantityResult struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ProductId     string                 `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	Success       bool                   `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
+	NewQuantity   int32                  `protobuf:"varint,3,opt,name=new_quantity,json=newQuantity,proto3" json:"new_quantity,omitempty"`
+	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DecreaseQuantityResult) Reset() {
+	*x = DecreaseQuantityResult{}
+	mi := &file_product_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DecreaseQuantityResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DecreaseQuantityResult) ProtoMessage() {}
+
+func (x *DecreaseQuantityResult) ProtoReflect() protoreflect.Message {
+	mi := &file_product_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DecreaseQuantityResult.ProtoReflect.Descriptor instead.
+func (*DecreaseQuantityResult) Descriptor() ([]byte, []int) {
+	return file_product_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *DecreaseQuantityResult) GetProductId() string {
+	if x != nil {
+		return x.ProductId
+	}
+	return ""
+}
+
+func (x *DecreaseQuantityResult) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *DecreaseQuantityResult) GetNewQuantity() int32 {
+	if x != nil {
+		return x.NewQuantity
+	}
+	return 0
+}
+
+func (x *DecreaseQuantityResult) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_product_proto protoreflect.FileDescriptor
 
 const file_product_proto_rawDesc = "" +
@@ -408,15 +632,32 @@ const file_product_proto_rawDesc = "" +
 	"\x17DecreaseQuantityRequest\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x01 \x01(\tR\tproductId\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x05R\bquantity\"p\n" +
+	"\bquantity\x18\x02 \x01(\x05R\bquantity\"q\n" +
 	"\x18DecreaseQuantityResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12 \n" +
-	"\vnewQuantity\x18\x02 \x01(\x05R\vnewQuantity\x12\x18\n" +
-	"\amessage\x18\x03 \x01(\tR\amessage2\x92\x02\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12!\n" +
+	"\fnew_quantity\x18\x02 \x01(\x05R\vnewQuantity\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\"S\n" +
+	"\x1cDecreaseQuantityByIdsRequest\x123\n" +
+	"\x05items\x18\x01 \x03(\v2\x1d.product.DecreaseQuantityItemR\x05items\"Q\n" +
+	"\x14DecreaseQuantityItem\x12\x1d\n" +
+	"\n" +
+	"product_id\x18\x01 \x01(\tR\tproductId\x12\x1a\n" +
+	"\bquantity\x18\x02 \x01(\x05R\bquantity\"\x8e\x01\n" +
+	"\x1dDecreaseQuantityByIdsResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x129\n" +
+	"\aresults\x18\x03 \x03(\v2\x1f.product.DecreaseQuantityResultR\aresults\"\x8e\x01\n" +
+	"\x16DecreaseQuantityResult\x12\x1d\n" +
+	"\n" +
+	"product_id\x18\x01 \x01(\tR\tproductId\x12\x18\n" +
+	"\asuccess\x18\x02 \x01(\bR\asuccess\x12!\n" +
+	"\fnew_quantity\x18\x03 \x01(\x05R\vnewQuantity\x12\x18\n" +
+	"\amessage\x18\x04 \x01(\tR\amessage2\xfa\x02\n" +
 	"\x0eProductService\x12Q\n" +
 	"\x0eGetProductById\x12\x1e.product.GetProductByIdRequest\x1a\x1f.product.GetProductByIdResponse\x12T\n" +
 	"\x0fGetProductByIds\x12\x1f.product.GetProductByIdsRequest\x1a .product.GetProductByIdsResponse\x12W\n" +
-	"\x10DecreaseQuantity\x12 .product.DecreaseQuantityRequest\x1a!.product.DecreaseQuantityResponseB?Z=golectro-product/internal/delivery/grpc/proto/product;productb\x06proto3"
+	"\x10DecreaseQuantity\x12 .product.DecreaseQuantityRequest\x1a!.product.DecreaseQuantityResponse\x12f\n" +
+	"\x15DecreaseQuantityByIds\x12%.product.DecreaseQuantityByIdsRequest\x1a&.product.DecreaseQuantityByIdsResponseB?Z=golectro-product/internal/delivery/grpc/proto/product;productb\x06proto3"
 
 var (
 	file_product_proto_rawDescOnce sync.Once
@@ -430,28 +671,36 @@ func file_product_proto_rawDescGZIP() []byte {
 	return file_product_proto_rawDescData
 }
 
-var file_product_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_product_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_product_proto_goTypes = []any{
-	(*GetProductByIdRequest)(nil),    // 0: product.GetProductByIdRequest
-	(*GetProductByIdResponse)(nil),   // 1: product.GetProductByIdResponse
-	(*GetProductByIdsRequest)(nil),   // 2: product.GetProductByIdsRequest
-	(*GetProductByIdsResponse)(nil),  // 3: product.GetProductByIdsResponse
-	(*DecreaseQuantityRequest)(nil),  // 4: product.DecreaseQuantityRequest
-	(*DecreaseQuantityResponse)(nil), // 5: product.DecreaseQuantityResponse
+	(*GetProductByIdRequest)(nil),         // 0: product.GetProductByIdRequest
+	(*GetProductByIdResponse)(nil),        // 1: product.GetProductByIdResponse
+	(*GetProductByIdsRequest)(nil),        // 2: product.GetProductByIdsRequest
+	(*GetProductByIdsResponse)(nil),       // 3: product.GetProductByIdsResponse
+	(*DecreaseQuantityRequest)(nil),       // 4: product.DecreaseQuantityRequest
+	(*DecreaseQuantityResponse)(nil),      // 5: product.DecreaseQuantityResponse
+	(*DecreaseQuantityByIdsRequest)(nil),  // 6: product.DecreaseQuantityByIdsRequest
+	(*DecreaseQuantityItem)(nil),          // 7: product.DecreaseQuantityItem
+	(*DecreaseQuantityByIdsResponse)(nil), // 8: product.DecreaseQuantityByIdsResponse
+	(*DecreaseQuantityResult)(nil),        // 9: product.DecreaseQuantityResult
 }
 var file_product_proto_depIdxs = []int32{
 	1, // 0: product.GetProductByIdsResponse.products:type_name -> product.GetProductByIdResponse
-	0, // 1: product.ProductService.GetProductById:input_type -> product.GetProductByIdRequest
-	2, // 2: product.ProductService.GetProductByIds:input_type -> product.GetProductByIdsRequest
-	4, // 3: product.ProductService.DecreaseQuantity:input_type -> product.DecreaseQuantityRequest
-	1, // 4: product.ProductService.GetProductById:output_type -> product.GetProductByIdResponse
-	3, // 5: product.ProductService.GetProductByIds:output_type -> product.GetProductByIdsResponse
-	5, // 6: product.ProductService.DecreaseQuantity:output_type -> product.DecreaseQuantityResponse
-	4, // [4:7] is the sub-list for method output_type
-	1, // [1:4] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	7, // 1: product.DecreaseQuantityByIdsRequest.items:type_name -> product.DecreaseQuantityItem
+	9, // 2: product.DecreaseQuantityByIdsResponse.results:type_name -> product.DecreaseQuantityResult
+	0, // 3: product.ProductService.GetProductById:input_type -> product.GetProductByIdRequest
+	2, // 4: product.ProductService.GetProductByIds:input_type -> product.GetProductByIdsRequest
+	4, // 5: product.ProductService.DecreaseQuantity:input_type -> product.DecreaseQuantityRequest
+	6, // 6: product.ProductService.DecreaseQuantityByIds:input_type -> product.DecreaseQuantityByIdsRequest
+	1, // 7: product.ProductService.GetProductById:output_type -> product.GetProductByIdResponse
+	3, // 8: product.ProductService.GetProductByIds:output_type -> product.GetProductByIdsResponse
+	5, // 9: product.ProductService.DecreaseQuantity:output_type -> product.DecreaseQuantityResponse
+	8, // 10: product.ProductService.DecreaseQuantityByIds:output_type -> product.DecreaseQuantityByIdsResponse
+	7, // [7:11] is the sub-list for method output_type
+	3, // [3:7] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_product_proto_init() }
@@ -465,7 +714,7 @@ func file_product_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_product_proto_rawDesc), len(file_product_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

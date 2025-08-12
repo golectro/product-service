@@ -5,9 +5,10 @@ package product;
 option go_package = "golectro-product/internal/delivery/grpc/proto/product;product";
 
 service ProductService {
-  rpc GetProductById    (GetProductByIdRequest)    returns (GetProductByIdResponse);
-  rpc GetProductByIds   (GetProductByIdsRequest)   returns (GetProductByIdsResponse);
-  rpc DecreaseQuantity  (DecreaseQuantityRequest)  returns (DecreaseQuantityResponse);
+  rpc GetProductById          (GetProductByIdRequest)          returns (GetProductByIdResponse);
+  rpc GetProductByIds         (GetProductByIdsRequest)         returns (GetProductByIdsResponse);
+  rpc DecreaseQuantity        (DecreaseQuantityRequest)        returns (DecreaseQuantityResponse);
+  rpc DecreaseQuantityByIds   (DecreaseQuantityByIdsRequest)   returns (DecreaseQuantityByIdsResponse);
 }
 
 message GetProductByIdRequest {
@@ -41,7 +42,29 @@ message DecreaseQuantityRequest {
 }
 
 message DecreaseQuantityResponse {
-  bool success      = 1;
-  int32 newQuantity = 2;
-  string message    = 3;
+  bool   success      = 1;
+  int32  new_quantity = 2;
+  string message      = 3;
+}
+
+message DecreaseQuantityByIdsRequest {
+  repeated DecreaseQuantityItem items = 1;
+}
+
+message DecreaseQuantityItem {
+  string product_id = 1;
+  int32  quantity   = 2;
+}
+
+message DecreaseQuantityByIdsResponse {
+  bool   success  = 1;
+  string message  = 2;
+  repeated DecreaseQuantityResult results = 3;
+}
+
+message DecreaseQuantityResult {
+  string product_id   = 1;
+  bool   success      = 2;
+  int32  new_quantity = 3;
+  string message      = 4;
 }
