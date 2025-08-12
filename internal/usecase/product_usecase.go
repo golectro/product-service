@@ -63,6 +63,28 @@ func (uc *ProductUseCase) GetProductByID(ctx context.Context, productID uuid.UUI
 	return converter.ToProductResponse(product), nil
 }
 
+func (uc *ProductUseCase) GetProductsByIDs(ctx context.Context, productIDs []uuid.UUID) ([]*model.ProductResponse, error) {
+	tx := uc.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	products, err := uc.ProductRepository.FindProductsByIds(tx, productIDs)
+	if err != nil {
+		uc.Log.WithError(err).Error("Failed to find products by IDs")
+		return nil, utils.WrapMessageAsError(constants.FailedGetProductsByIDs, err)
+	}
+
+	if len(products) == 0 {
+		return nil, utils.WrapMessageAsError(constants.ProductNotFound)
+	}
+
+	var productResponses []*model.ProductResponse
+	for _, product := range products {
+		productResponses = append(productResponses, converter.ToProductResponse(&product))
+	}
+
+	return productResponses, nil
+}
+
 func (uc *ProductUseCase) GetProduct(ctx context.Context, productID uuid.UUID) (*entity.Product, error) {
 	tx := uc.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()

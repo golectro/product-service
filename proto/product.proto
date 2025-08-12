@@ -5,7 +5,8 @@ package product;
 option go_package = "golectro-product/internal/delivery/grpc/proto/product;product";
 
 service ProductService {
-  rpc GetProductById (GetProductByIdRequest) returns (GetProductByIdResponse);
+  rpc GetProductById  (GetProductByIdRequest)  returns (GetProductByIdResponse);
+  rpc GetProductByIds (GetProductByIdsRequest) returns (GetProductByIdsResponse);
 }
 
 message GetProductByIdRequest {
@@ -13,14 +14,22 @@ message GetProductByIdRequest {
 }
 
 message GetProductByIdResponse {
-  string id = 1;
-  string name = 2;
+  string id          = 1;
+  string name        = 2;
   string description = 3;
-  string category = 4;
-  string brand = 5;
-  string color = 6;
-  string specs = 7;
-  double price = 8;
-  int32 quantity = 9;
-  string created_by = 10;
+  string category    = 4;
+  string brand       = 5;
+  string color       = 6;
+  string specs       = 7;
+  double price       = 8;
+  int32  quantity    = 9;
+  string created_by  = 10;
+}
+
+message GetProductByIdsRequest {
+  repeated string ids = 1;
+}
+
+message GetProductByIdsResponse {
+  repeated GetProductByIdResponse products = 1;
 }

@@ -51,6 +51,17 @@ func (r *ProductRepository) FindProductById(db *gorm.DB, productID uuid.UUID) (*
 	return &product, nil
 }
 
+func (r *ProductRepository) FindProductsByIds(db *gorm.DB, productIDs []uuid.UUID) ([]entity.Product, error) {
+	var products []entity.Product
+
+	if err := db.Preload("Images").Where("id IN ?", productIDs).Find(&products).Error; err != nil {
+		r.Log.WithError(err).Error("Failed to find products by IDs")
+		return nil, err
+	}
+
+	return products, nil
+}
+
 func (r *ProductRepository) CreateImage(db *gorm.DB, productImage *entity.ProductImage) error {
 	return db.Create(productImage).Error
 }

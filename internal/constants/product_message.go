@@ -54,6 +54,10 @@ var (
 		"en": "Failed to get product by ID",
 		"id": "Gagal mendapatkan produk berdasarkan ID",
 	}
+	FailedGetProductsByIDs = model.Message{
+		"en": "Failed to get products by IDs",
+		"id": "Gagal mendapatkan produk berdasarkan ID",
+	}
 	InvalidSearchRequest = model.Message{
 		"en": "Invalid search request",
 		"id": "Permintaan pencarian tidak valid",
